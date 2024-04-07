@@ -25,25 +25,26 @@ class LoginController extends Controller
     {
         // Validate user input
         $request->validate([
-            'username' => [new EmptyInput, 'string'],            
+            'username' => [new EmptyInput, 'string'],
             'password' => [new EmptyInput],
-        ]);  
+        ]);
 
         // Grab password from database
         $user = User::where('username', strtolower($request->username))->get();
-        
+
         // Compare given password with stored one
-        $storedPassword = $user[0]->password;        
+        $storedPassword = $user[0]->password;
 
         if(password_verify($request->password, $storedPassword)){
             // On success, create session
             session_start();
-            $_SESSION["userId"] = $user[0]->id;   
+            $_SESSION["userId"] = $user[0]->id;
+            $_SESSION["username"] = $user[0]->display_username;
             return redirect()->route('dashboard');
         }
         else {
             // Redirect user
-            return redirect()->route('register');
+            return redirect()->route('login')->with('status', 'wrong-credentials');
         }
 
     }
