@@ -51,6 +51,10 @@
                 <p class="mt-5 text-center text-sm text-red-500">
                     Invalid credentials.
                 </p>
+            @elseif(session('status') === 'user-not-found')
+                <p class="mt-5 text-center text-sm text-red-500">
+                    User not found.
+                </p>
             @endif
 
         </div>

@@ -30,21 +30,26 @@ class LoginController extends Controller
         ]);
 
         // Grab password from database
-        $user = User::where('username', strtolower($request->username))->get();
+        $user = User::where('username', strtolower($request->username))->first();
 
-        // Compare given password with stored one
-        $storedPassword = $user[0]->password;
+        if (!is_null($user)) {
+            // Compare given password with stored one
+            $storedPassword = $user->password;
 
-        if(password_verify($request->password, $storedPassword)){
-            // On success, create session
-            session_start();
-            $_SESSION["userId"] = $user[0]->id;
-            $_SESSION["username"] = $user[0]->display_username;
-            return redirect()->route('dashboard');
-        }
-        else {
-            // Redirect user
-            return redirect()->route('login')->with('status', 'wrong-credentials');
+            if(password_verify($request->password, $storedPassword)) {
+                // On success, create session
+                session_start();
+                $_SESSION["userId"] = $user->id;
+                $_SESSION["username"] = $user->display_username;
+                return redirect()->route('dashboard');
+            }
+            else {
+                // Redirect user
+                return redirect()->route('login')->with('status', 'wrong-credentials');
+            }
+
+        } else {
+            return redirect()->route('login')->with('status', 'user-not-found');
         }
 
     }
